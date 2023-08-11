@@ -52,3 +52,32 @@ public class HelloWorldController {
         return "Merhaba, Dünya!";
     }
 }
+---------
+Jenkins file 
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    // Kaynak kodunu kontrol eder.
+                }
+            }
+        }
+        stage('Lint Ingress YAML') {
+            steps {
+                script {
+                    def lintResult = sh(script: "kubectl apply -f /home/yigit/jenkins/ingress.yaml --dry-run=client -o json", returnStatus: true)
+                    if (lintResult == 0) {
+                        echo "Ingress YAML  geçerli."
+                    } else {
+                        error "Ingress YAML  geçersiz."
+                    }
+                }
+            }
+        }
+    }
+}
+
+
