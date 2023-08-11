@@ -1,0 +1,2 @@
+crontab -e
+0 12,15 * * * /home/yigit/YigitProje/2.sh >> /home/2.log 2>&1
