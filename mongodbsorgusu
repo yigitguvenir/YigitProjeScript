@@ -1,6 +1,10 @@
-db.collectionName.find(
-  {
-    insert_date: { $gt: new Date("2022-03-11") },
-    gsm: { $ne: null }
-  }
-)
+april_1_date = datetime(2022, 4, 1)
+
+query = {
+    'gsm': {'$ne': None},
+    'insert_date': {'$gt': april_1_date}
+}
+results = collection.find(query)
+
+for result in results:
+    print(result)
