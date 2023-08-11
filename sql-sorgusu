@@ -1,0 +1,6 @@
+db.collectionName.find(
+  {
+    insert_date: { $gt: new Date("2022-04-01") },
+    gsm: { $ne: null }
+  }
+)
