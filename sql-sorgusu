@@ -1,6 +1,4 @@
-db.collectionName.find(
-  {
-    insert_date: { $gt: new Date("2022-04-01") },
-    gsm: { $ne: null }
-  }
-)
+SELECT ORDER_ID, ID,
+         LISTAGG(ID, ', ') WITHIN GROUP (ORDER BY ID)
+    FROM SOME_TABLE
+GROUP BY ORDER_ID
