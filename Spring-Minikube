@@ -1,0 +1,54 @@
+minikube install
+
+sudo apt update
+sudo apt install docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo apt update
+sudo apt install kubectl
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+minikube start
+--------------
+https://start.spring.io/ 
+Generate Hello-world project
+unzip helloworld-app.zip
+/YigitSpring/helloworld-app/src/main/java$ vim HelloWorldController.java
+
+----------------------------------------------------------------
+
+kubectl create deployment hello-world --image=my-spring-project
+kubectl expose deployment hello-world --type=NodePort --port=8080
+kubectl apply -f ingress.yaml
+
+jenkins install (snap paket yükleyicisi ile)
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-world
+                port:
+                  number: 8080
+
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+    @GetMapping("/hello")
+    public String hello() {
+        return "Merhaba, Dünya!";
+    }
+}
