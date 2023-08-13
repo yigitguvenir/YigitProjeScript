@@ -10,74 +10,135 @@ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 minikube start
 --------------
-https://start.spring.io/ 
-Generate Hello-world project
-unzip helloworld-app.zip
-/YigitSpring/helloworld-app/src/main/java$ vim HelloWorldController.java
 
-----------------------------------------------------------------
 
-kubectl create deployment hello-world --image=my-spring-project
-kubectl expose deployment hello-world --type=NodePort --port=8080
-kubectl apply -f ingress.yaml
+Hello-WorldApplication.java (Springboot)
 
-jenkins install (snap paket yükleyicisi ile)
+package com.example;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+public class HelloWorldApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(HelloWorldApplication.class, args);
+    }
+
+    @RestController
+    class HelloWorldController {
+
+        @GetMapping("/")
+        public String hello() {
+            return "Merhaba Dünya!";
+        }
+    }
+}
+-------------------------------------------------
+
+Resources-->Templates--->index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+</body>
+</html>
+
+--------------------------------------------------
+application.properties
+
+server.port=8181
+
+
+Dockerfile
+FROM openjdk:11-jre-slim
+WORKDIR /app
+COPY demo-0.0.1-SNAPSHOT.jar app.jar
+CMD ["java", "-jar", "app.jar"]
+
+
+sudo docker build -t springboot-proje .
+
+
+
+-----------------------------------------------------
+
+Deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-app
+  template:
+    metadata:
+      labels:
+        app: springboot-app
+    spec:
+      containers:
+        - name: springboot-container
+          image: springboot-proje  
+          ports:
+            - containerPort: 8181
+
+Service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-service
+spec:
+  selector:
+    app: springboot-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8181
+  type: NodePort
+
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+
+-------------------------------------------------
+
+ingress.yaml
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-ingress
+  name: springboot-ingress
 spec:
   rules:
-    - host: localhost
+    - host: springboot.local 
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: hello-world
+                name: springboot-service
                 port:
-                  number: 8080
+                  number: 80
+
+kubectl apply -f ingress.yaml
 
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class HelloWorldController {
-    @GetMapping("/hello")
-    public String hello() {
-        return "Merhaba, Dünya!";
-    }
-}
----------
-Jenkins file 
-pipeline {
-    agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    // Kaynak kodunu kontrol eder.
-                }
-            }
-        }
-        stage('Lint Ingress YAML') {
-            steps {
-                script {
-                    def lintResult = sh(script: "kubectl apply -f /home/yigit/jenkins/ingress.yaml --dry-run=client -o json", returnStatus: true)
-                    if (lintResult == 0) {
-                        echo "Ingress YAML  geçerli."
-                    } else {
-                        error "Ingress YAML  geçersiz."
-                    }
-                }
-            }
-        }
-    }
-}
+
 
 
